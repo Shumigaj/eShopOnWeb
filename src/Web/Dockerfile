@@ -10,6 +10,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
 
+EXPOSE 80
+
 COPY *.sln .
 COPY . .
 WORKDIR /app/src/Web
@@ -22,6 +24,7 @@ WORKDIR /app
 COPY --from=build /app/src/Web/out ./
 
 # Optional: Set this here if not setting it from docker-compose.yml
-# ENV ASPNETCORE_ENVIRONMENT Development
+#ENV ASPNETCORE_ENVIRONMENT Docker # Development Docker
+ENV ASPNETCORE_URLS http://+:80
 
 ENTRYPOINT ["dotnet", "Web.dll"]

@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.eShopWeb.Web.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,18 +26,21 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket
         private string _username = null;
         private readonly IBasketViewModelService _basketViewModelService;
         private readonly IAppLogger<CheckoutModel> _logger;
+        private readonly IConfiguration _configuration;
 
         public CheckoutModel(IBasketService basketService,
             IBasketViewModelService basketViewModelService,
             SignInManager<ApplicationUser> signInManager,
             IOrderService orderService,
-            IAppLogger<CheckoutModel> logger)
+            IAppLogger<CheckoutModel> logger,
+            IConfiguration configuration)
         {
             _basketService = basketService;
             _signInManager = signInManager;
             _orderService = orderService;
             _basketViewModelService = basketViewModelService;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
@@ -59,7 +63,11 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket
 
                 var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
                 await _basketService.SetQuantities(BasketModel.Id, updateModel);
-                await _orderService.CreateOrderAsync(BasketModel.Id, new Address("123 Main St.", "Kent", "OH", "United States", "44240"));
+                await _orderService.CreateOrderAsync(BasketModel.Id, 
+                    new Address("123 Main St.", "Kent", "OH", "United States", "44240"),
+                    _configuration["DELIVERY_REGISTER_FUNCTION_URL"],
+                    _configuration["ORDERS_QUEUE_CONNECTION_STRING"]
+                    );
                 await _basketService.DeleteBasketAsync(BasketModel.Id);               
             }
             catch (EmptyBasketOnCheckoutException emptyBasketOnCheckoutException)

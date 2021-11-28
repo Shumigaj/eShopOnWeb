@@ -38,10 +38,10 @@ namespace Microsoft.eShopWeb.PublicApi
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             // use in-memory database
-            ConfigureInMemoryDatabases(services);
+            //ConfigureInMemoryDatabases(services);
 
             // use real database
-            //ConfigureProductionServices(services);
+            ConfigureProductionServices(services);
         }
 
         public void ConfigureDockerServices(IServiceCollection services)
@@ -95,7 +95,7 @@ namespace Microsoft.eShopWeb.PublicApi
             services.AddScoped<ITokenClaimsService, IdentityTokenClaimService>();
 
             var baseUrlConfig = new BaseUrlConfiguration();
-            Configuration.Bind(BaseUrlConfiguration.CONFIG_NAME, baseUrlConfig);            
+            Configuration.Bind(BaseUrlConfiguration.CONFIG_NAME, baseUrlConfig);
 
             services.AddMemoryCache();
 
@@ -188,7 +188,7 @@ namespace Microsoft.eShopWeb.PublicApi
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
